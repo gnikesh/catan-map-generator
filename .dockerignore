@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-dist/
+.git/
+.github/
+*.md
+.env*
+.vscode/
+.idea/

@@ -1,0 +1,424 @@
+/* ==========================================================================
+   Catan Board Generator — Styles
+   ========================================================================== */
+
+/* ── Custom Properties ─────────────────────────────────────────────────────── */
+:root {
+  --color-ocean:        #1565A0;
+  --color-ocean-dark:   #0D47A1;
+  --color-bg:           #0A2744;
+  --color-bg-deep:      #061A30;
+  --color-surface:      #0F3460;
+  --color-card-bg:      #F8F4E8;
+  --color-card-bg-alt:  #FFF9F0;
+  --color-card-border:  #C8A96E;
+  --color-card-shadow:  rgba(0, 0, 0, 0.4);
+  --color-text-primary: #F0EBD8;
+  --color-text-dark:    #2C1810;
+  --color-text-muted:   #8B7B6A;
+  --color-text-hint:    #A09080;
+  --color-accent:       #D4843E;
+  --color-accent-light: #E8A050;
+  --color-btn:          #B83A0A;
+  --color-btn-hover:    #8B2500;
+  --color-btn-active:   #6B1800;
+  --color-toggle-on:    #B83A0A;
+  --color-toggle-off:   #BBA88A;
+
+  --radius-card: 14px;
+  --radius-btn:  10px;
+  --radius-sm:   6px;
+
+  --shadow-card:  0 4px 20px var(--color-card-shadow);
+  --shadow-board: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --font-heading: 'Georgia', 'Times New Roman', serif;
+  --font-body:    'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --transition-board: opacity 0.18s ease-in-out;
+  --transition-btn:   background 0.15s, transform 0.1s, box-shadow 0.15s;
+  --transition-toggle: background 0.2s;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  /* background-image is set via JS (Vite asset import for game-background.png) */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+ul { list-style: none; }
+button { cursor: pointer; font-family: inherit; }
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.app-header {
+  text-align: center;
+  padding: 1.5rem 0 0.75rem;
+}
+
+.app-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--color-accent-light);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.02em;
+}
+
+.app-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.3rem;
+}
+
+.app-subtitle kbd {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 0.8em;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+}
+
+/* ── Main layout ───────────────────────────────────────────────────────────── */
+.app-main {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  flex: 1;
+  align-items: flex-start;
+  padding: 0.75rem 0 1rem;
+}
+
+/* ── Board section ─────────────────────────────────────────────────────────── */
+.board-section {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.board-wrapper {
+  /* Board frame (game-background.png) is rendered inside the SVG */
+  background: transparent;
+  border-radius: var(--radius-card);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: var(--transition-board);
+}
+
+/* ── Controls panel ────────────────────────────────────────────────────────── */
+.controls-panel {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Card component ────────────────────────────────────────────────────────── */
+.card {
+  background: var(--color-card-bg);
+  color: var(--color-text-dark);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-text-dark);
+  margin-bottom: 0.2rem;
+}
+
+.card-hint {
+  font-size: 0.74rem;
+  color: var(--color-text-hint);
+  margin-bottom: 1rem;
+}
+
+/* ── Shuffle button ────────────────────────────────────────────────────────── */
+.shuffle-card {
+  background: var(--color-card-bg-alt);
+  text-align: center;
+}
+
+.btn-shuffle {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--color-btn);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-size: 1.05rem;
+  font-weight: bold;
+  font-family: var(--font-heading);
+  letter-spacing: 0.04em;
+  box-shadow: 0 3px 10px rgba(183, 58, 10, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: var(--transition-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-shuffle:hover {
+  background: var(--color-btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(183, 58, 10, 0.5), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.btn-shuffle:active {
+  transform: translateY(0);
+  background: var(--color-btn-active);
+  box-shadow: 0 1px 4px rgba(183, 58, 10, 0.3);
+}
+
+.btn-icon {
+  font-size: 1.2em;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.btn-shuffle:active .btn-icon {
+  transform: rotate(180deg);
+}
+
+.stats-text {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.6rem;
+  min-height: 1em;
+}
+
+/* ── Toggle switches (constraints) ────────────────────────────────────────── */
+.constraint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.constraint-item + .constraint-item {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 0.1rem;
+  margin-top: 0.1rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.45rem 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Hide native checkbox */
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom toggle track */
+.toggle-track {
+  display: block;
+  width: 36px;
+  height: 20px;
+  background: var(--color-toggle-off);
+  border-radius: 10px;
+  transition: var(--transition-toggle);
+  position: relative;
+}
+
+/* Toggle thumb */
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-track {
+  background: var(--color-toggle-on);
+}
+
+.toggle-input:checked + .toggle-track::after {
+  transform: translateX(16px);
+}
+
+/* Focus ring (accessibility) */
+.toggle-input:focus-visible + .toggle-track {
+  outline: 2px solid var(--color-btn);
+  outline-offset: 2px;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.86rem;
+  color: var(--color-text-dark);
+  line-height: 1.3;
+}
+
+.toggle-hint {
+  font-size: 0.72rem;
+  color: var(--color-text-hint);
+  font-weight: normal;
+}
+
+/* ── Legend ────────────────────────────────────────────────────────────────── */
+.legend-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-text-dark);
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.legend-divider {
+  height: 1px;
+  background: var(--color-card-border);
+  opacity: 0.5;
+  margin: 0.6rem 0;
+}
+
+.legend-ports-note {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+.app-footer {
+  text-align: center;
+  padding: 0.75rem 0 1rem;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+}
+
+/* ── Responsive: tablet ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .controls-panel {
+    flex: 0 0 230px;
+  }
+}
+
+/* ── Responsive: mobile ────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .app-main {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controls-panel {
+    flex: none;
+    width: 100%;
+  }
+
+  /* On mobile, show controls ABOVE the board for quick access */
+  .board-section  { order: 2; }
+  .controls-panel { order: 1; }
+
+  /* Two-column layout for constraints + legend on mobile */
+  .app-main .controls-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .shuffle-card {
+    grid-column: 1 / -1;  /* Full width */
+  }
+
+  .legend-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Very small screens ────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .app-main .controls-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .app-title {
+    font-size: 1.4rem;
+  }
+}
+
+/* ── Print ─────────────────────────────────────────────────────────────────── */
+@media print {
+  body { background: white; color: black; }
+  .controls-panel, .app-header, .app-footer { display: none; }
+  .board-wrapper { box-shadow: none; border: 1px solid #ccc; }
+  .app-main { padding: 0; }
+}

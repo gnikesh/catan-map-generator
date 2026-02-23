@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Random Catan board generator with configurable constraint checking. Shuffle resources, numbers, and ports for a fair game every time." />
+    <title>Catan Board Generator</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- Inline SVG favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5' fill='%23F5D020' stroke='%238B6914' stroke-width='4'/></svg>" />
+  </head>
+
+  <body>
+    <div class="app">
+
+      <!-- ── Header ─────────────────────────────────────────────────── -->
+      <header class="app-header">
+        <h1 class="app-title">Catan Board Generator</h1>
+        <p class="app-subtitle">Press <kbd>Space</kbd> or click Shuffle for a new board</p>
+      </header>
+
+      <!-- ── Main content ───────────────────────────────────────────── -->
+      <main class="app-main">
+
+        <!-- Board display -->
+        <section class="board-section" aria-label="Catan board">
+          <div class="board-wrapper">
+            <svg
+              id="board-svg"
+              class="board-svg"
+              xmlns="http://www.w3.org/2000/svg"
+              role="img"
+              aria-label="Generated Catan board"
+            ></svg>
+          </div>
+        </section>
+
+        <!-- Controls panel -->
+        <aside class="controls-panel" aria-label="Board generation controls">
+
+          <!-- Shuffle button + stats -->
+          <div class="card shuffle-card">
+            <button id="btn-generate" class="btn-shuffle" type="button" aria-label="Shuffle board">
+              <span class="btn-icon">⟳</span>
+              Shuffle Board
+            </button>
+            <p id="stats" class="stats-text" aria-live="polite"></p>
+          </div>
+
+          <!-- Constraint toggles -->
+          <div class="card constraints-card">
+            <h2 class="card-title">Constraints</h2>
+            <p class="card-hint">Checked = allowed &nbsp;·&nbsp; Unchecked = forbidden</p>
+
+            <ul class="constraint-list" role="list">
+              <li class="constraint-item">
+                <label class="toggle-label" for="cb-68-touch">
+                  <span class="toggle-wrap">
+                    <input type="checkbox" id="cb-68-touch" class="toggle-input" />
+                    <span class="toggle-track"></span>
+                  </span>
+                  <span class="toggle-text">
+                    <strong>6 &amp; 8</strong> can be adjacent
+                    <span class="toggle-hint">High-value tiles can touch</span>
+                  </span>
+                </label>
+              </li>
+
+              <li class="constraint-item">
+                <label class="toggle-label" for="cb-212-touch">
+                  <span class="toggle-wrap">
+                    <input type="checkbox" id="cb-212-touch" class="toggle-input" />
+                    <span class="toggle-track"></span>
+                  </span>
+                  <span class="toggle-text">
+                    <strong>2 &amp; 12</strong> can be adjacent
+                    <span class="toggle-hint">Rare tiles can touch</span>
+                  </span>
+                </label>
+              </li>
+
+              <li class="constraint-item">
+                <label class="toggle-label" for="cb-samenum-touch">
+                  <span class="toggle-wrap">
+                    <input type="checkbox" id="cb-samenum-touch" class="toggle-input" />
+                    <span class="toggle-track"></span>
+                  </span>
+                  <span class="toggle-text">
+                    <strong>Same numbers</strong> can be adjacent
+                    <span class="toggle-hint">Duplicate numbers can touch</span>
+                  </span>
+                </label>
+              </li>
+
+              <li class="constraint-item">
+                <label class="toggle-label" for="cb-sameres-touch">
+                  <span class="toggle-wrap">
+                    <input type="checkbox" id="cb-sameres-touch" class="toggle-input" />
+                    <span class="toggle-track"></span>
+                  </span>
+                  <span class="toggle-text">
+                    <strong>Same resources</strong> can be adjacent
+                    <span class="toggle-hint">Matching tiles can touch</span>
+                  </span>
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Legend -->
+          <div class="card legend-card">
+            <h2 class="card-title">Legend</h2>
+            <ul class="legend-list" role="list">
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#F5D020;" aria-hidden="true"></span>
+                <span>Grain (×4)</span>
+              </li>
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#2D5A1B;" aria-hidden="true"></span>
+                <span>Lumber (×4)</span>
+              </li>
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#8BC34A;" aria-hidden="true"></span>
+                <span>Wool (×4)</span>
+              </li>
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#78909C;" aria-hidden="true"></span>
+                <span>Ore (×3)</span>
+              </li>
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#C1440E;" aria-hidden="true"></span>
+                <span>Brick (×3)</span>
+              </li>
+              <li class="legend-item">
+                <span class="legend-swatch" style="background:#C8B560;" aria-hidden="true"></span>
+                <span>Desert (×1)</span>
+              </li>
+            </ul>
+            <div class="legend-divider"></div>
+            <p class="legend-ports-note">
+              Ports: <strong>3:1</strong> = any 3 resources&nbsp;·&nbsp;<strong>2:1</strong> = specific resource
+            </p>
+          </div>
+
+        </aside>
+      </main>
+
+      <!-- ── Footer ─────────────────────────────────────────────────── -->
+      <footer class="app-footer">
+        <p>Inspired by Settlers of Catan by Klaus Teuber &nbsp;·&nbsp; Open source board generator</p>
+      </footer>
+
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
