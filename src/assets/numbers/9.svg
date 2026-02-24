@@ -1,10 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <circle cx="40" cy="40" r="38" fill="#FFFFF0" stroke="#C8A030" stroke-width="2"/>
-  <circle cx="40" cy="40" r="34" fill="none" stroke="#8B6914" stroke-width="1.5"/>
-  <text x="40" y="44" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#1A1A1A">9</text>
-  <!-- 4 pips: total width = 15, startX = 40 - 7.5 = 32.5 -->
-  <circle cx="32.5" cy="57" r="2" fill="#1A1A1A"/>
-  <circle cx="37.5" cy="57" r="2" fill="#1A1A1A"/>
-  <circle cx="42.5" cy="57" r="2" fill="#1A1A1A"/>
-  <circle cx="47.5" cy="57" r="2" fill="#1A1A1A"/>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <circle cx="40" cy="40" r="36" fill="#FFF8E7" stroke="#B8860B" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="40" y="36" text-anchor="middle" dominant-baseline="middle" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#2C1810">9</text>
+  <circle cx="24" cy="54" r="2.8" fill="#2C1810"/>
+  <circle cx="32" cy="54" r="2.8" fill="#2C1810"/>
+  <circle cx="40" cy="54" r="2.8" fill="#2C1810"/>
+  <circle cx="48" cy="54" r="2.8" fill="#2C1810"/>
 </svg>
