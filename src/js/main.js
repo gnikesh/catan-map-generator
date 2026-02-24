@@ -29,7 +29,6 @@ document.body.style.backgroundAttachment = 'fixed'
 
 const boardSvg    = document.getElementById('board-svg')
 const generateBtn = document.getElementById('btn-generate')
-const statsEl     = document.getElementById('stats')
 
 // ─── Constraints ─────────────────────────────────────────────────────────────
 
@@ -148,15 +147,7 @@ function generate() {
 
   requestAnimationFrame(() => {
     const result = getNextBoard()
-
     renderBoard(boardSvg, result)
-
-    if (result.relaxed) {
-      statsEl.textContent = 'Some constraints were relaxed to generate this board.'
-    } else {
-      statsEl.textContent = `Shuffled in ${result.attempts} attempt${result.attempts === 1 ? '' : 's'}.`
-    }
-
     boardSvg.style.opacity = '1'
   })
 }
@@ -195,6 +186,13 @@ for (const id of Object.keys(CHECKBOX_MAP)) {
 for (const [id, key] of Object.entries(CHECKBOX_MAP)) {
   const el = document.getElementById(id)
   if (el) el.checked = DEFAULT_CONSTRAINTS[key]
+}
+
+// On mobile, collapse Constraints and Legend by default
+if (window.innerWidth <= 700) {
+  document.querySelectorAll('.constraints-card, .legend-card').forEach(el => {
+    el.removeAttribute('open')
+  })
 }
 
 // Initialise pool and render first board

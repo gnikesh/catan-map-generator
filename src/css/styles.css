@@ -15,7 +15,7 @@
   --color-card-shadow:  rgba(0, 0, 0, 0.4);
   --color-text-primary: #F0EBD8;
   --color-text-dark:    #2C1810;
-  --color-text-muted:   #8B7B6A;
+  --color-text-muted:   #292420;
   --color-text-hint:    #A09080;
   --color-accent:       #D4843E;
   --color-accent-light: #E8A050;
@@ -220,11 +220,27 @@ button { cursor: pointer; font-family: inherit; }
   transform: rotate(180deg);
 }
 
-.stats-text {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  margin-top: 0.6rem;
-  min-height: 1em;
+/* ── Collapsible cards (details/summary) ──────────────────────────────────── */
+.collapsible-title {
+  cursor: pointer;
+  user-select: none;
+  list-style: none;         /* remove default triangle */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible-title::-webkit-details-marker { display: none; }
+
+.collapsible-title::after {
+  content: '▸';
+  font-size: 0.85em;
+  color: var(--color-text-hint);
+  transition: transform 0.2s;
+}
+
+details[open] > .collapsible-title::after {
+  transform: rotate(90deg);
 }
 
 /* ── Toggle switches (constraints) ────────────────────────────────────────── */

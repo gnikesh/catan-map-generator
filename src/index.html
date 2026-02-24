@@ -44,12 +44,11 @@
               <span class="btn-icon">⟳</span>
               Shuffle Board
             </button>
-            <p id="stats" class="stats-text" aria-live="polite"></p>
           </div>
 
           <!-- Constraint toggles -->
-          <div class="card constraints-card">
-            <h2 class="card-title">Constraints</h2>
+          <details class="card constraints-card" open>
+            <summary class="card-title collapsible-title">Constraints</summary>
             <p class="card-hint">Checked = allowed &nbsp;·&nbsp; Unchecked = forbidden</p>
 
             <ul class="constraint-list" role="list">
@@ -105,11 +104,11 @@
                 </label>
               </li>
             </ul>
-          </div>
+          </details>
 
           <!-- Legend -->
-          <div class="card legend-card">
-            <h2 class="card-title">Legend</h2>
+          <details class="card legend-card" open>
+            <summary class="card-title collapsible-title">Legend</summary>
             <ul class="legend-list" role="list">
               <li class="legend-item">
                 <span class="legend-swatch" style="background:#F5D020;" aria-hidden="true"></span>
@@ -140,14 +139,14 @@
             <p class="legend-ports-note">
               Ports: <strong>3:1</strong> = any 3 resources&nbsp;·&nbsp;<strong>2:1</strong> = specific resource
             </p>
-          </div>
+          </details>
 
         </aside>
       </main>
 
       <!-- ── Footer ─────────────────────────────────────────────────── -->
       <footer class="app-footer">
-        <p>Inspired by Settlers of Catan by Klaus Teuber &nbsp;·&nbsp; Open source board generator</p>
+        <p>Inspired by Settlers of Catan by Klaus Teuber &nbsp;·&nbsp; Happy gaming! </p>
       </footer>
 
     </div>
