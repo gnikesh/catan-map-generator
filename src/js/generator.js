@@ -1,23 +1,26 @@
 /**
  * generator.js
- * Board generation algorithm using Fisher-Yates shuffle with constraint checking.
+ * Board generation with constraint-aware placement.
  *
- * Two-stage nested approach for efficiency:
- *   Stage 1 (outer): Shuffle resources → check resource constraints → retry if violated
- *   Stage 2 (inner): Shuffle numbers  → check number constraints  → retry if violated
- * When stage 2 fails, only the number placement is re-shuffled (keeping the valid
- * resource layout), dramatically improving success rates under strict constraints.
+ * Resource placement uses backtracking graph coloring instead of random
+ * shuffle+check, making the same-resource-no-adjacent constraint reliably
+ * solvable (hex grids with 5 resource types are well within graph coloring
+ * feasibility).
  *
- * If constrained generation still fails, constraints are progressively relaxed
- * (same-resource → same-number → 2&12 → 6&8) so the user always gets a board.
+ * Number placement uses shuffle+retry (fast enough with 50 retries per
+ * valid resource layout).
+ *
+ * If constrained generation still fails, constraints are progressively
+ * relaxed so the user always gets a board.
  *
  * Ports: always shuffled (no placement constraints in standard Catan).
  */
 
 import { checkResourceConstraints, checkNumberConstraints } from './constraints.js'
+import { areAdjacent } from './hex-grid.js'
 
-const MAX_RESOURCE_ATTEMPTS = 200
-const MAX_NUMBER_ATTEMPTS   = 50
+const MAX_RESOURCE_ATTEMPTS = 10   // backtracking attempts (each is thorough)
+const MAX_NUMBER_ATTEMPTS   = 100
 
 /**
  * Fisher-Yates in-place shuffle (mutates the input array).
@@ -36,11 +39,99 @@ function shuffle(array) {
 }
 
 /**
+ * Build adjacency lists for the hex positions.
+ * @param {Array<{q, r}>} positions
+ * @returns {number[][]} adjacency[i] = array of indices adjacent to position i
+ */
+function buildAdjacency(positions) {
+  const adj = positions.map(() => [])
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i + 1; j < positions.length; j++) {
+      if (areAdjacent(positions[i], positions[j])) {
+        adj[i].push(j)
+        adj[j].push(i)
+      }
+    }
+  }
+  return adj
+}
+
+/**
+ * Place resources using backtracking (graph coloring with fixed color counts).
+ *
+ * Positions are processed in order of most-constrained-first (most neighbors).
+ * For each position, available resources are tried in random order. A resource
+ * is valid if it has remaining count AND no adjacent already-placed tile has
+ * the same resource (when the constraint is active).
+ *
+ * @param {Array<{q,r}>} positions - hex positions
+ * @param {string[]} resources - resource pool (e.g., 4 grain, 4 lumber, ...)
+ * @param {boolean} enforceNoAdjacentSame - whether same-resource adjacency is forbidden
+ * @returns {string[]|null} - resource assignment per position, or null if failed
+ */
+function placeResourcesBacktracking(positions, resources, enforceNoAdjacentSame) {
+  const n = positions.length
+  const adj = buildAdjacency(positions)
+
+  // Count available resources
+  const pool = {}
+  for (const r of resources) {
+    pool[r] = (pool[r] || 0) + 1
+  }
+  const resourceTypes = Object.keys(pool)
+
+  // Order positions: most neighbors first (most constrained first)
+  const order = Array.from({ length: n }, (_, i) => i)
+  order.sort((a, b) => adj[b].length - adj[a].length)
+
+  const assignment = new Array(n).fill(null)
+  const remaining = { ...pool }
+
+  function backtrack(step) {
+    if (step === n) return true
+
+    const idx = order[step]
+    // Collect which resources are used by already-assigned neighbors
+    const neighborResources = new Set()
+    if (enforceNoAdjacentSame) {
+      for (const ni of adj[idx]) {
+        if (assignment[ni] !== null) {
+          neighborResources.add(assignment[ni])
+        }
+      }
+    }
+
+    // Try resources in random order
+    const candidates = shuffle([...resourceTypes])
+    for (const res of candidates) {
+      if (remaining[res] <= 0) continue
+      if (enforceNoAdjacentSame && neighborResources.has(res)) continue
+
+      // Place
+      assignment[idx] = res
+      remaining[res]--
+
+      if (backtrack(step + 1)) return true
+
+      // Undo
+      assignment[idx] = null
+      remaining[res]++
+    }
+
+    return false
+  }
+
+  const success = backtrack(0)
+  return success ? assignment : null
+}
+
+/**
  * Try to generate a board with specific constraints.
  * Returns { tiles, attempts } where tiles is null on failure.
  */
 function tryGenerate(config, constraints) {
   const { hexPositions, resources, numbers } = config
+  const enforceNoAdjacentRes = !constraints.allowSameResTouch
 
   let tiles = null
   let totalAttempts = 0
@@ -48,16 +139,21 @@ function tryGenerate(config, constraints) {
   for (let resAttempt = 0; resAttempt < MAX_RESOURCE_ATTEMPTS; resAttempt++) {
     totalAttempts++
 
-    const shuffledResources = shuffle([...resources])
+    // --- Stage 1: Resource placement via backtracking ---
+    const resourceAssignment = placeResourcesBacktracking(
+      hexPositions, resources, enforceNoAdjacentRes
+    )
+
+    if (!resourceAssignment) continue
+
     const draftTiles = hexPositions.map((pos, i) => ({
       q: pos.q,
       r: pos.r,
-      resource: shuffledResources[i],
+      resource: resourceAssignment[i],
       number: null,
     }))
 
-    if (!checkResourceConstraints(draftTiles, constraints)) continue
-
+    // --- Stage 2: Number placement via shuffle+retry ---
     for (let numAttempt = 0; numAttempt < MAX_NUMBER_ATTEMPTS; numAttempt++) {
       totalAttempts++
 
@@ -86,42 +182,29 @@ function tryGenerate(config, constraints) {
 
 /**
  * Constraint relaxation order: relax the hardest constraints first.
- * Each step allows one more thing, making generation progressively easier.
  */
 const RELAXATION_KEYS = [
-  'allowSameResTouch',   // hardest to satisfy — relax first
+  'allowSameResTouch',
   'allowSameNumTouch',
   'allow212Touch',
-  'allow68Touch',        // easiest / most important — relax last
+  'allow68Touch',
 ]
 
 /**
  * Generate a valid Catan board. Always succeeds — if the requested constraints
  * are too strict, constraints are silently relaxed one by one until a board is found.
- *
- * @param {object} config       - Board configuration from board-config.js
- * @param {object} constraints  - Constraint flags from constraints.js
- * @returns {{
- *   tiles: Array<{q, r, resource, number}>,
- *   ports: Array<{hex, dir, type}>,
- *   attempts: number,
- *   success: boolean,
- *   relaxed: boolean
- * }}
  */
 export function generateBoard(config, constraints) {
   const { portSlots, portTypes } = config
 
-  // Try with the user's exact constraints first
   let result = tryGenerate(config, constraints)
   let relaxed = false
 
-  // If that fails, progressively relax constraints until it works
   if (!result.tiles) {
     const relaxedConstraints = { ...constraints }
     for (const key of RELAXATION_KEYS) {
-      if (relaxedConstraints[key]) continue // already allowed, skip
-      relaxedConstraints[key] = true        // relax this constraint
+      if (relaxedConstraints[key]) continue
+      relaxedConstraints[key] = true
       result = tryGenerate(config, relaxedConstraints)
       relaxed = true
       if (result.tiles) break
